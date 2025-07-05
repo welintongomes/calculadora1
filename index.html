@@ -566,7 +566,6 @@ let timerInterval = null;
 let timerTime = 0;
 let alarms = [];
 let isPlayingAlarm = false;
-let soundTimeouts = []; // Array para controlar timeouts de som
 
 // Atualizar horário atual
 function updateCurrentTime() {
@@ -765,12 +764,10 @@ function startTimer() {
             updateTimerDisplay();
 
             if (timerTime <= 0) {
-                stopTimer();
-                // Resetar flag de som antes de tocar
-                resetSoundSystem();
-                playAlarmSound('timer');
-                showNotification('⏰ Temporizador finalizado!');
-            }
+    stopTimer();
+    playAlarmSound(); // ← Remover os parâmetros
+    showNotification('⏰ Temporizador finalizado!');
+}
         }, 1000);
     }
 }
@@ -851,112 +848,48 @@ function checkAlarms() {
 
     alarms.forEach(alarm => {
         if (alarm.active && alarm.time === currentTime) {
-            // Resetar sistema de som antes de tocar
-            resetSoundSystem();
-            playAlarmSound('alarm');
-            showNotification(`⏰ Alarme: ${alarm.message}`);
-            alarm.active = false;
-            updateAlarmsDisplay();
-        }
+    playAlarmSound(); // ← Remover os parâmetros
+    showNotification(`⏰ Alarme: ${alarm.message}`);
+    alarm.active = false;
+    updateAlarmsDisplay();
+}
     });
 }
 
-// Sistema de som COMPLETAMENTE REFORMULADO
-function resetSoundSystem() {
-    // Limpar todos os timeouts de som pendentes
-    soundTimeouts.forEach(timeout => clearTimeout(timeout));
-    soundTimeouts = [];
-    
-    // Resetar flag de som
+
+
+function playAlarmSound() {
+    // Resetar flag antes de tocar
     isPlayingAlarm = false;
     
-    console.log('Sistema de som resetado');
-}
-
-function playAlarmSound(source = 'general') {
-    console.log(`Tentando tocar som do ${source}`);
-    
-    // Sempre resetar antes de tocar
-    resetSoundSystem();
-    
-    // Marcar que está tocando
-    isPlayingAlarm = true;
-    
     try {
-        // Criar novo contexto de áudio para evitar conflitos
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Garantir que o contexto esteja ativo
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-        
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
 
-        // Configurar som baseado na fonte
-        if (source === 'timer') {
-            // Som do temporizador - mais longo e insistente
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.3);
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.6);
-            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.9);
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 1.2);
-        } else {
-            // Som do alarme - padrão
-            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);
-            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 1.0);
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 1.5);
-        }
+        // Som simples e eficaz
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);
+        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 1.0);
 
-        // Volume progressivo
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.5);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 2.0);
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 1.0);
 
-        const duration = source === 'timer' ? 2.5 : 2.0;
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
+        oscillator.stop(audioContext.currentTime + 2);
 
-        // Limpeza quando terminar
         oscillator.onended = () => {
-            try {
-                audioContext.close();
-            } catch (e) {
-                console.log('Erro ao fechar contexto de áudio:', e);
-            }
-            isPlayingAlarm = false;
-            console.log(`Som do ${source} finalizado`);
+            audioContext.close();
         };
-
-        // Timeout de segurança
-        const safetyTimeout = setTimeout(() => {
-            try {
-                oscillator.stop();
-                audioContext.close();
-            } catch (e) {
-                console.log('Erro no timeout de segurança:', e);
-            }
-            isPlayingAlarm = false;
-            console.log(`Timeout de segurança ativado para ${source}`);
-        }, (duration + 1) * 1000);
-        
-        soundTimeouts.push(safetyTimeout);
-
-        console.log(`Som do ${source} iniciado com sucesso`);
 
     } catch (error) {
         console.error('Erro ao tocar som:', error);
-        isPlayingAlarm = false;
-
         // Fallback para vibração
         if (navigator.vibrate) {
             navigator.vibrate([300, 200, 300, 200, 500]);
-            console.log('Vibração ativada como fallback');
         }
     }
 }
