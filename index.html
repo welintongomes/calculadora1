@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Completa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .current-time {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 120px;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+
+        .tab-button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 11px;
+            min-height: 400px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .calc-display {
+            grid-column: 1 / -1;
+            padding: 20px;
+            font-size: 2rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .calc-btn {
+            padding: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+        }
+
+        .calc-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .calc-btn.operator {
+            background: #007bff;
+            color: white;
+        }
+
+        .calc-btn.operator:hover {
+            background: #0056b3;
+        }
+
+        .calc-btn.equals {
+            background: #28a745;
+            color: white;
+        }
+
+        .calc-btn.equals:hover {
+            background: #1e7e34;
+        }
+
+        .time-calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            /*margin-bottom: 30px;*/
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn.danger {
+            background: #dc3545;
+        }
+
+        .btn.danger:hover {
+            background: #c82333;
+        }
+
+        .btn.success {
+            background: #28a745;
+        }
+
+        .btn.success:hover {
+            background: #1e7e34;
+        }
+
+        .result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .converter-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .converter-card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .alarms-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .alarm-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .alarm-time {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .countdown {
+            color: #007bff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .time-calculator {
+                overflow-y: scroll;
+                max-height: 272px;
+                grid-template-columns: 1fr;
+            }
+
+            .converter-grid {
+                /* min-height: 399px; */
+                overflow-y: scroll;
+                max-height: 358px;
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                min-width: 100px;
+                font-size: 0.9rem;
+            }
+
+            .timer-display {
+                font-size: 2rem;
+                text-align: center;
+                font-family: 'Courier New', monospace;
+                background: #000;
+                color: #00ff00;
+                padding: 10px;
+                border-radius: 15px;
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Calculadora</h1>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('calculator')">Calculadora</button>
+            <button class="tab-button" onclick="openTab('time')">Tempo</button>
+            <button class="tab-button" onclick="openTab('timer')">Timer</button>
+            <button class="tab-button" onclick="openTab('alarms')">Alarmes</button>
+            <button class="tab-button" onclick="openTab('converters')">Conversores</button>
+        </div>
+
+        <div id="calculator" class="tab-content active">
+            <div class="calculator-grid">
+                <div class="calc-display" id="display">0</div>
+                <button class="calc-btn" onclick="clearDisplay()">C</button>
+                <button class="calc-btn" onclick="deleteLast()">⌫</button>
+                <button class="calc-btn operator" onclick="inputOperator('/')">/</button>
+                <button class="calc-btn operator" onclick="inputOperator('*')">×</button>
+                <button class="calc-btn" onclick="inputNumber('7')">7</button>
+                <button class="calc-btn" onclick="inputNumber('8')">8</button>
+                <button class="calc-btn" onclick="inputNumber('9')">9</button>
+                <button class="calc-btn operator" onclick="inputOperator('-')">-</button>
+                <button class="calc-btn" onclick="inputNumber('4')">4</button>
+                <button class="calc-btn" onclick="inputNumber('5')">5</button>
+                <button class="calc-btn" onclick="inputNumber('6')">6</button>
+                <button class="calc-btn operator" onclick="inputOperator('+')">+</button>
+                <button class="calc-btn" onclick="inputNumber('1')">1</button>
+                <button class="calc-btn" onclick="inputNumber('2')">2</button>
+                <button class="calc-btn" onclick="inputNumber('3')">3</button>
+                <button class="calc-btn equals" onclick="calculate()" rowspan="2">=</button>
+                <button class="calc-btn" onclick="inputNumber('0')" style="grid-column: 1 / 3;">0</button>
+                <button class="calc-btn" onclick="inputNumber('.')">.</button>
+            </div>
+        </div>
+
+        <div id="time" class="tab-content">
+            <div class="time-calculator">
+                <div>
+                    <h3>📅 Cálculo de Idade ou Ano</h3>
+                    <div class="input-group">
+                        <label>Informe a idade:</label>
+                        <input type="number" id="idade" placeholder="Ex: 38">
+                    </div>
+                    <div class="input-group">
+                        <label>Ou informe o ano de nascimento:</label>
+                        <input type="number" id="anoNascimento" placeholder="Ex: 1987">
+                    </div>
+                    <button class="btn" onclick="calcularAnoOuIdade()">Calcular</button>
+                    <div id="resultadoAnoIdade"></div>
+                </div>
+
+                <div>
+                    <h3>➕ Adicionar Tempo</h3>
+                    <div class="input-group">
+                        <label>Horas para adicionar:</label>
+                        <input type="number" id="addHours" placeholder="Ex: 1">
+                    </div>
+                    <div class="input-group">
+                        <label>Minutos para adicionar:</label>
+                        <input type="number" id="addMinutes" placeholder="Ex: 35">
+                    </div>
+                    <button class="btn" onclick="addTime()">Calcular</button>
+                </div>
+                <div>
+                    <h3>📅 Adicionar Dias</h3>
+                    <div class="input-group">
+                        <label>Dias para adicionar:</label>
+                        <input type="number" id="addDays" placeholder="Ex: 36">
+                    </div>
+                    <div class="input-group">
+                        <label>Horas para adicionar:</label>
+                        <input type="number" id="addDaysHours" placeholder="Ex: 12">
+                    </div>
+                    <button class="btn" onclick="addDays()">Calcular</button>
+                </div>
+            </div>
+            <div class="result" id="timeResult"></div>
+        </div>
+
+        <div id="timer" class="tab-content">
+            <div style="text-align: center;">
+                <h3>⏱️ Cronômetro</h3>
+                <div class="timer-display" id="stopwatch">00:00:00</div>
+                <button class="btn success" onclick="startStopwatch()">Iniciar</button>
+                <button class="btn danger" onclick="stopStopwatch()">Parar</button>
+                <button class="btn" onclick="resetStopwatch()">Zerar</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>⏲️ Temporizador</h3>
+                <div class="input-group" style="max-width: 300px; margin: 0 auto;">
+                    <label>Minutos:</label>
+                    <input type="number" id="timerMinutes" placeholder="Ex: 5">
+                </div>
+                <div class="input-group" style="max-width: 300px; margin: 0 auto;">
+                    <label>Segundos:</label>
+                    <input type="number" id="timerSeconds" placeholder="Ex: 30">
+                </div>
+                <div class="timer-display" id="countdown">00:00</div>
+                <button class="btn success" onclick="startTimer()">Iniciar</button>
+                <button class="btn danger" onclick="stopTimer()">Parar</button>
+                <button class="btn" onclick="resetTimer()">Zerar</button>
+            </div>
+        </div>
+
+        <div id="alarms" class="tab-content">
+            <h3>⏰ Criar Alarme/Lembrete</h3>
+            <div class="input-group">
+                <label>Hora:</label>
+                <input type="time" id="alarmTime">
+            </div>
+            <div class="input-group">
+                <label>Mensagem do lembrete:</label>
+                <input type="text" id="alarmMessage" placeholder="Ex: Tomar remédio">
+            </div>
+            <button class="btn success" onclick="createAlarm()">Criar Alarme</button>
+
+            <div class="alarms-list" id="alarmsList">
+                <h4>Alarmes Ativos</h4>
+                <div id="activeAlarms"></div>
+            </div>
+        </div>
+
+        <div id="converters" class="tab-content">
+            <div class="converter-grid">
+                <div class="converter-card">
+                    <h3>📏 Comprimento</h3>
+                    <div class="input-group">
+                        <input type="number" id="lengthInput" placeholder="Valor">
+                        <select id="lengthFrom">
+                            <option value="m">Metro</option>
+                            <option value="cm">Centímetro</option>
+                            <option value="mm">Milímetro</option>
+                            <option value="km">Quilômetro</option>
+                            <option value="in">Polegada</option>
+                            <option value="ft">Pé</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <select id="lengthTo">
+                            <option value="cm">Centímetro</option>
+                            <option value="m">Metro</option>
+                            <option value="mm">Milímetro</option>
+                            <option value="km">Quilômetro</option>
+                            <option value="in">Polegada</option>
+                            <option value="ft">Pé</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="convertLength()">Converter</button>
+                    <div id="lengthResult" class="result" style="display: none;"></div>
+                </div>
+
+                <div class="converter-card">
+                    <h3>⚖️ Peso</h3>
+                    <div class="input-group">
+                        <input type="number" id="weightInput" placeholder="Valor">
+                        <select id="weightFrom">
+                            <option value="kg">Quilograma</option>
+                            <option value="g">Grama</option>
+                            <option value="lb">Libra</option>
+                            <option value="oz">Onça</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <select id="weightTo">
+                            <option value="g">Grama</option>
+                            <option value="kg">Quilograma</option>
+                            <option value="lb">Libra</option>
+                            <option value="oz">Onça</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="convertWeight()">Converter</button>
+                    <div id="weightResult" class="result" style="display: none;"></div>
+                </div>
+
+                <div class="converter-card">
+                    <h3>🌡️ Temperatura</h3>
+                    <div class="input-group">
+                        <input type="number" id="tempInput" placeholder="Valor">
+                        <select id="tempFrom">
+                            <option value="c">Celsius</option>
+                            <option value="f">Fahrenheit</option>
+                            <option value="k">Kelvin</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <select id="tempTo">
+                            <option value="f">Fahrenheit</option>
+                            <option value="c">Celsius</option>
+                            <option value="k">Kelvin</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="convertTemp()">Converter</button>
+                    <div id="tempResult" class="result" style="display: none;"></div>
+                </div>
+
+                <div class="converter-card">
+                    <h3>💰 Moeda (Exemplo)</h3>
+                    <div class="input-group">
+                        <input type="number" id="currencyInput" placeholder="Valor">
+                        <select id="currencyFrom">
+                            <option value="brl">Real (BRL)</option>
+                            <option value="usd">Dólar (USD)</option>
+                            <option value="eur">Euro (EUR)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <select id="currencyTo">
+                            <option value="usd">Dólar (USD)</option>
+                            <option value="brl">Real (BRL)</option>
+                            <option value="eur">Euro (EUR)</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="convertCurrency()">Converter</button>
+                    <div id="currencyResult" class="result" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Variáveis globais
+let currentInput = '0';
+let previousInput = '0';
+let operator = null;
+let waitingForOperand = false;
+let stopwatchInterval = null;
+let stopwatchTime = 0;
+let timerInterval = null;
+let timerTime = 0;
+let alarms = [];
+let isPlayingAlarm = false;
+let soundTimeouts = []; // Array para controlar timeouts de som
+
+// Atualizar horário atual
+function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleString('pt-BR');
+    document.getElementById('currentTime').textContent = timeString;
+}
+
+// Abrir abas
+function openTab(tabName) {
+    const tabContents = document.querySelectorAll('.tab-content');
+    const tabButtons = document.querySelectorAll('.tab-button');
+
+    tabContents.forEach(content => content.classList.remove('active'));
+    tabButtons.forEach(button => button.classList.remove('active'));
+
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Calculadora
+function inputNumber(num) {
+    if (waitingForOperand) {
+        currentInput = num;
+        waitingForOperand = false;
+    } else {
+        currentInput = currentInput === '0' ? num : currentInput + num;
+    }
+    updateDisplay();
+}
+
+function inputOperator(nextOperator) {
+    const inputValue = parseFloat(currentInput);
+
+    if (previousInput === '0') {
+        previousInput = currentInput;
+    } else if (operator) {
+        const result = performCalculation();
+        currentInput = String(result);
+        previousInput = currentInput;
+    }
+
+    waitingForOperand = true;
+    operator = nextOperator;
+    updateDisplay();
+}
+
+function performCalculation() {
+    const prev = parseFloat(previousInput);
+    const current = parseFloat(currentInput);
+
+    if (operator === '+') return prev + current;
+    if (operator === '-') return prev - current;
+    if (operator === '*') return prev * current;
+    if (operator === '/') return current !== 0 ? prev / current : 0;
+
+    return current;
+}
+
+function calculate() {
+    if (operator && !waitingForOperand) {
+        const result = performCalculation();
+        currentInput = String(result);
+        previousInput = '0';
+        operator = null;
+        waitingForOperand = true;
+        updateDisplay();
+    }
+}
+
+function updateDisplay() {
+    const display = document.getElementById('display');
+    display.textContent = currentInput;
+}
+
+function clearDisplay() {
+    currentInput = '0';
+    previousInput = '0';
+    operator = null;
+    waitingForOperand = false;
+    updateDisplay();
+}
+
+function deleteLast() {
+    if (currentInput.length > 1) {
+        currentInput = currentInput.slice(0, -1);
+    } else {
+        currentInput = '0';
+    }
+    updateDisplay();
+}
+
+function calcularAnoOuIdade() {
+    const idade = parseInt(document.getElementById('idade').value);
+    const anoNascimento = parseInt(document.getElementById('anoNascimento').value);
+    const anoAtual = new Date().getFullYear();
+
+    const resultado = document.getElementById('timeResult');
+    resultado.innerHTML = "<h4>Resultado:</h4>";
+
+    if (!isNaN(idade) && isNaN(anoNascimento)) {
+        const anoCalculado = anoAtual - idade;
+        resultado.innerHTML += `<p><strong>Com ${idade} anos, a pessoa nasceu em:</strong> ${anoCalculado}</p>`;
+    } else if (!isNaN(anoNascimento) && isNaN(idade)) {
+        const idadeCalculada = anoAtual - anoNascimento;
+        resultado.innerHTML += `<p><strong>Quem nasceu em ${anoNascimento} tem:</strong> ${idadeCalculada} anos</p>`;
+    } else if (!isNaN(idade) && !isNaN(anoNascimento)) {
+        resultado.innerHTML += `<p>Informe <strong>apenas idade</strong> ou <strong>ano de nascimento</strong>, não os dois.</p>`;
+    } else {
+        resultado.innerHTML += `<p>Preencha um dos campos para calcular.</p>`;
+    }
+}
+
+// Cálculos de tempo
+function addTime() {
+    const hours = parseInt(document.getElementById('addHours').value) || 0;
+    const minutes = parseInt(document.getElementById('addMinutes').value) || 0;
+
+    const now = new Date();
+    const futureTime = new Date(now.getTime() + (hours * 60 + minutes) * 60 * 1000);
+
+    const result = document.getElementById('timeResult');
+    result.innerHTML = `
+        <h4>Resultado:</h4>
+        <p><strong>Horário atual:</strong> ${now.toLocaleString('pt-BR')}</p>
+        <p><strong>Horário futuro:</strong> ${futureTime.toLocaleString('pt-BR')}</p>
+        <p><strong>Diferença:</strong> ${hours}h ${minutes}min</p>
+    `;
+}
+
+function addDays() {
+    const days = parseInt(document.getElementById('addDays').value) || 0;
+    const hours = parseInt(document.getElementById('addDaysHours').value) || 0;
+
+    const now = new Date();
+    const futureDate = new Date(now.getTime() + (days * 24 + hours) * 60 * 60 * 1000);
+
+    const result = document.getElementById('timeResult');
+    result.innerHTML = `
+        <h4>Resultado:</h4>
+        <p><strong>Data atual:</strong> ${now.toLocaleString('pt-BR')}</p>
+        <p><strong>Data futura:</strong> ${futureDate.toLocaleString('pt-BR')}</p>
+        <p><strong>Diferença:</strong> ${days} dias e ${hours} horas</p>
+    `;
+}
+
+// Cronômetro
+function startStopwatch() {
+    if (!stopwatchInterval) {
+        stopwatchInterval = setInterval(() => {
+            stopwatchTime += 10;
+            updateStopwatchDisplay();
+        }, 10);
+    }
+}
+
+function stopStopwatch() {
+    if (stopwatchInterval) {
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        document.title = 'Calculadora Completa';
+    }
+}
+
+function resetStopwatch() {
+    stopStopwatch();
+    stopwatchTime = 0;
+    updateStopwatchDisplay();
+    document.title = 'Calculadora Completa';
+}
+
+function updateStopwatchDisplay() {
+    const minutes = Math.floor(stopwatchTime / 60000);
+    const seconds = Math.floor((stopwatchTime % 60000) / 1000);
+    const milliseconds = Math.floor((stopwatchTime % 1000) / 10);
+
+    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
+
+    document.getElementById('stopwatch').textContent = timeString;
+
+    if (stopwatchInterval) {
+        document.title = `⏱️ ${timeString} - Calculadora Completa`;
+    }
+}
+
+// Temporizador - CORRIGIDO
+function startTimer() {
+    const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
+    const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
+
+    timerTime = (minutes * 60 + seconds) * 1000;
+
+    if (timerTime > 0 && !timerInterval) {
+        timerInterval = setInterval(() => {
+            timerTime -= 1000;
+            updateTimerDisplay();
+
+            if (timerTime <= 0) {
+                stopTimer();
+                // Resetar flag de som antes de tocar
+                resetSoundSystem();
+                playAlarmSound('timer');
+                showNotification('⏰ Temporizador finalizado!');
+            }
+        }, 1000);
+    }
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function resetTimer() {
+    stopTimer();
+    timerTime = 0;
+    updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timerTime / 60000);
+    const seconds = Math.floor((timerTime % 60000) / 1000);
+
+    document.getElementById('countdown').textContent =
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Alarmes - CORRIGIDO
+function createAlarm() {
+    const time = document.getElementById('alarmTime').value;
+    const message = document.getElementById('alarmMessage').value;
+
+    if (!time) {
+        alert('Por favor, defina um horário para o alarme.');
+        return;
+    }
+
+    const alarm = {
+        id: Date.now(),
+        time: time,
+        message: message || 'Alarme',
+        active: true
+    };
+
+    alarms.push(alarm);
+    updateAlarmsDisplay();
+
+    document.getElementById('alarmTime').value = '';
+    document.getElementById('alarmMessage').value = '';
+}
+
+function updateAlarmsDisplay() {
+    const container = document.getElementById('activeAlarms');
+    container.innerHTML = '';
+
+    alarms.forEach(alarm => {
+        if (alarm.active) {
+            const alarmDiv = document.createElement('div');
+            alarmDiv.className = 'alarm-item';
+            alarmDiv.innerHTML = `
+                <div>
+                    <div class="alarm-time">${alarm.time}</div>
+                    <div>${alarm.message}</div>
+                </div>
+                <button class="btn danger" onclick="removeAlarm(${alarm.id})">Remover</button>
+            `;
+            container.appendChild(alarmDiv);
+        }
+    });
+}
+
+function removeAlarm(id) {
+    alarms = alarms.filter(alarm => alarm.id !== id);
+    updateAlarmsDisplay();
+}
+
+function checkAlarms() {
+    const now = new Date();
+    const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+    alarms.forEach(alarm => {
+        if (alarm.active && alarm.time === currentTime) {
+            // Resetar sistema de som antes de tocar
+            resetSoundSystem();
+            playAlarmSound('alarm');
+            showNotification(`⏰ Alarme: ${alarm.message}`);
+            alarm.active = false;
+            updateAlarmsDisplay();
+        }
+    });
+}
+
+// Sistema de som COMPLETAMENTE REFORMULADO
+function resetSoundSystem() {
+    // Limpar todos os timeouts de som pendentes
+    soundTimeouts.forEach(timeout => clearTimeout(timeout));
+    soundTimeouts = [];
+    
+    // Resetar flag de som
+    isPlayingAlarm = false;
+    
+    console.log('Sistema de som resetado');
+}
+
+function playAlarmSound(source = 'general') {
+    console.log(`Tentando tocar som do ${source}`);
+    
+    // Sempre resetar antes de tocar
+    resetSoundSystem();
+    
+    // Marcar que está tocando
+    isPlayingAlarm = true;
+    
+    try {
+        // Criar novo contexto de áudio para evitar conflitos
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Garantir que o contexto esteja ativo
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Configurar som baseado na fonte
+        if (source === 'timer') {
+            // Som do temporizador - mais longo e insistente
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.3);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.6);
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.9);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 1.2);
+        } else {
+            // Som do alarme - padrão
+            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 1.0);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 1.5);
+        }
+
+        // Volume progressivo
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.5);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 2.0);
+
+        const duration = source === 'timer' ? 2.5 : 2.0;
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+
+        // Limpeza quando terminar
+        oscillator.onended = () => {
+            try {
+                audioContext.close();
+            } catch (e) {
+                console.log('Erro ao fechar contexto de áudio:', e);
+            }
+            isPlayingAlarm = false;
+            console.log(`Som do ${source} finalizado`);
+        };
+
+        // Timeout de segurança
+        const safetyTimeout = setTimeout(() => {
+            try {
+                oscillator.stop();
+                audioContext.close();
+            } catch (e) {
+                console.log('Erro no timeout de segurança:', e);
+            }
+            isPlayingAlarm = false;
+            console.log(`Timeout de segurança ativado para ${source}`);
+        }, (duration + 1) * 1000);
+        
+        soundTimeouts.push(safetyTimeout);
+
+        console.log(`Som do ${source} iniciado com sucesso`);
+
+    } catch (error) {
+        console.error('Erro ao tocar som:', error);
+        isPlayingAlarm = false;
+
+        // Fallback para vibração
+        if (navigator.vibrate) {
+            navigator.vibrate([300, 200, 300, 200, 500]);
+            console.log('Vibração ativada como fallback');
+        }
+    }
+}
+
+// Conversores (mantidos iguais)
+function convertLength() {
+    const value = parseFloat(document.getElementById('lengthInput').value);
+    const from = document.getElementById('lengthFrom').value;
+    const to = document.getElementById('lengthTo').value;
+
+    if (isNaN(value)) return;
+
+    const meters = convertToMeters(value, from);
+    const result = convertFromMeters(meters, to);
+
+    document.getElementById('lengthResult').style.display = 'block';
+    document.getElementById('lengthResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(4)} ${getUnitName(to)}`;
+}
+
+function convertToMeters(value, unit) {
+    const conversions = {
+        'm': 1, 'cm': 0.01, 'mm': 0.001, 'km': 1000, 'in': 0.0254, 'ft': 0.3048
+    };
+    return value * conversions[unit];
+}
+
+function convertFromMeters(meters, unit) {
+    const conversions = {
+        'm': 1, 'cm': 100, 'mm': 1000, 'km': 0.001, 'in': 39.3701, 'ft': 3.28084
+    };
+    return meters * conversions[unit];
+}
+
+function getUnitName(unit) {
+    const names = {
+        'm': 'metros', 'cm': 'centímetros', 'mm': 'milímetros', 
+        'km': 'quilômetros', 'in': 'polegadas', 'ft': 'pés'
+    };
+    return names[unit];
+}
+
+function convertWeight() {
+    const value = parseFloat(document.getElementById('weightInput').value);
+    const from = document.getElementById('weightFrom').value;
+    const to = document.getElementById('weightTo').value;
+
+    if (isNaN(value)) return;
+
+    const grams = convertToGrams(value, from);
+    const result = convertFromGrams(grams, to);
+
+    document.getElementById('weightResult').style.display = 'block';
+    document.getElementById('weightResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(4)} ${getWeightUnitName(to)}`;
+}
+
+function convertToGrams(value, unit) {
+    const conversions = { 'g': 1, 'kg': 1000, 'lb': 453.592, 'oz': 28.3495 };
+    return value * conversions[unit];
+}
+
+function convertFromGrams(grams, unit) {
+    const conversions = { 'g': 1, 'kg': 0.001, 'lb': 0.00220462, 'oz': 0.035274 };
+    return grams * conversions[unit];
+}
+
+function getWeightUnitName(unit) {
+    const names = { 'g': 'gramas', 'kg': 'quilogramas', 'lb': 'libras', 'oz': 'onças' };
+    return names[unit];
+}
+
+function convertTemp() {
+    const value = parseFloat(document.getElementById('tempInput').value);
+    const from = document.getElementById('tempFrom').value;
+    const to = document.getElementById('tempTo').value;
+
+    if (isNaN(value)) return;
+
+    let celsius;
+    if (from === 'c') celsius = value;
+    else if (from === 'f') celsius = (value - 32) * 5 / 9;
+    else if (from === 'k') celsius = value - 273.15;
+
+    let result;
+    if (to === 'c') result = celsius;
+    else if (to === 'f') result = celsius * 9 / 5 + 32;
+    else if (to === 'k') result = celsius + 273.15;
+
+    document.getElementById('tempResult').style.display = 'block';
+    document.getElementById('tempResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(2)}° ${getTempUnitName(to)}`;
+}
+
+function getTempUnitName(unit) {
+    const names = { 'c': 'Celsius', 'f': 'Fahrenheit', 'k': 'Kelvin' };
+    return names[unit];
+}
+
+function convertCurrency() {
+    const value = parseFloat(document.getElementById('currencyInput').value);
+    const from = document.getElementById('currencyFrom').value;
+    const to = document.getElementById('currencyTo').value;
+
+    if (isNaN(value)) return;
+
+    const rates = {
+        'brl': { 'usd': 0.18, 'eur': 0.17 },
+        'usd': { 'brl': 5.5, 'eur': 0.92 },
+        'eur': { 'brl': 6.0, 'usd': 1.09 }
+    };
+
+    let result;
+    if (from === to) {
+        result = value;
+    } else {
+        result = value * rates[from][to];
+    }
+
+    document.getElementById('currencyResult').style.display = 'block';
+    document.getElementById('currencyResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(2)} ${to.toUpperCase()}<br><small>*Taxas de exemplo para demonstração</small>`;
+}
+
+// Notificações - OTIMIZADA
+function showNotification(message) {
+    if (Notification.permission === 'granted') {
+        new Notification('⏰ Calculadora Completa', {
+            body: message,
+            icon: '🧮',
+            tag: 'calculator-alarm-' + Date.now(), // Tag única para evitar substituição
+            requireInteraction: true,
+            silent: false
+        });
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification('⏰ Calculadora Completa', {
+                    body: message,
+                    icon: '🧮',
+                    tag: 'calculator-alarm-' + Date.now(),
+                    requireInteraction: true,
+                    silent: false
+                });
+            }
+        });
+    }
+
+    if (!document.hidden) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function () {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+    setInterval(checkAlarms, 30000);
+
+    // Suporte a teclado
+    document.addEventListener('keydown', function (e) {
+        if (document.querySelector('#calculator').classList.contains('active')) {
+            const key = e.key;
+
+            if (key >= '0' && key <= '9') {
+                inputNumber(key);
+            } else if (key === '.') {
+                inputNumber('.');
+            } else if (key === '+') {
+                inputOperator('+');
+            } else if (key === '-') {
+                inputOperator('-');
+            } else if (key === '*') {
+                inputOperator('*');
+            } else if (key === '/') {
+                e.preventDefault();
+                inputOperator('/');
+            } else if (key === 'Enter' || key === '=') {
+                e.preventDefault();
+                calculate();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            }
+        }
+    });
+
+    // Cleanup quando a página é fechada
+    window.addEventListener('beforeunload', function() {
+        resetSoundSystem();
+    });
+    
+    console.log('Calculadora inicializada com sistema de som corrigido');
+});
+
+        // Função para fazer o cálculo quando clicado no botão = - REMOVIDA DUPLICATA
+        // (A função calculate() já existe acima)
+    </script>
+</body>
+
+</html>
