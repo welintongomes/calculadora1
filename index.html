@@ -555,545 +555,591 @@
     </div>
 
     <script>
-// Variáveis globais
-let currentInput = '0';
-let previousInput = '0';
-let operator = null;
-let waitingForOperand = false;
-let stopwatchInterval = null;
-let stopwatchTime = 0;
-let timerInterval = null;
-let timerTime = 0;
-let alarms = [];
-let isPlayingAlarm = false;
+        // Variáveis globais
+        let currentInput = '0';
+        let previousInput = '0';
+        let operator = null;
+        let waitingForOperand = false;
+        let stopwatchInterval = null;
+        let stopwatchTime = 0;
+        let timerInterval = null;
+        let timerTime = 0;
+        let alarms = [];
+        let isPlayingAlarm = false;
 
-// Atualizar horário atual
-function updateCurrentTime() {
-    const now = new Date();
-    const timeString = now.toLocaleString('pt-BR');
-    document.getElementById('currentTime').textContent = timeString;
-}
+        // Atualizar horário atual
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('pt-BR');
+            document.getElementById('currentTime').textContent = timeString;
+        }
 
-// Abrir abas
-function openTab(tabName) {
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tabButtons = document.querySelectorAll('.tab-button');
+        // Abrir abas
+        function openTab(tabName) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-button');
 
-    tabContents.forEach(content => content.classList.remove('active'));
-    tabButtons.forEach(button => button.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            tabButtons.forEach(button => button.classList.remove('active'));
 
-    document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
-}
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-// Calculadora
-function inputNumber(num) {
-    if (waitingForOperand) {
-        currentInput = num;
-        waitingForOperand = false;
-    } else {
-        currentInput = currentInput === '0' ? num : currentInput + num;
-    }
-    updateDisplay();
-}
+        // Calculadora - CORRIGIDA
+        function inputNumber(num) {
+            if (waitingForOperand) {
+                currentInput = num;
+                waitingForOperand = false;
+            } else {
+                currentInput = currentInput === '0' ? num : currentInput + num;
+            }
+            updateDisplay();
+        }
 
-function inputOperator(nextOperator) {
-    const inputValue = parseFloat(currentInput);
+        function inputOperator(nextOperator) {
+            const inputValue = parseFloat(currentInput);
 
-    if (previousInput === '0') {
-        previousInput = currentInput;
-    } else if (operator) {
-        const result = performCalculation();
-        currentInput = String(result);
-        previousInput = currentInput;
-    }
+            if (previousInput === '0') {
+                previousInput = currentInput;
+            } else if (operator) {
+                const result = performCalculation();
+                currentInput = String(result);
+                previousInput = currentInput;
+            }
 
-    waitingForOperand = true;
-    operator = nextOperator;
-    updateDisplay();
-}
+            waitingForOperand = true;
+            operator = nextOperator;
+            updateDisplay();
+        }
 
-function performCalculation() {
-    const prev = parseFloat(previousInput);
-    const current = parseFloat(currentInput);
+        function performCalculation() {
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
 
-    if (operator === '+') return prev + current;
-    if (operator === '-') return prev - current;
-    if (operator === '*') return prev * current;
-    if (operator === '/') return current !== 0 ? prev / current : 0;
+            if (operator === '+') return prev + current;
+            if (operator === '-') return prev - current;
+            if (operator === '*') return prev * current;
+            if (operator === '/') return current !== 0 ? prev / current : 0;
 
-    return current;
-}
+            return current;
+        }
 
-function calculate() {
-    if (operator && !waitingForOperand) {
-        const result = performCalculation();
-        currentInput = String(result);
-        previousInput = '0';
-        operator = null;
-        waitingForOperand = true;
-        updateDisplay();
-    }
-}
+        function calculate() {
+            if (operator && !waitingForOperand) {
+                const result = performCalculation();
+                currentInput = String(result);
+                previousInput = '0';
+                operator = null;
+                waitingForOperand = true;
+                updateDisplay();
+            }
+        }
 
-function updateDisplay() {
-    const display = document.getElementById('display');
-    display.textContent = currentInput;
-}
+        function updateDisplay() {
+            const display = document.getElementById('display');
+            display.textContent = currentInput;
+        }
 
-function clearDisplay() {
-    currentInput = '0';
-    previousInput = '0';
-    operator = null;
-    waitingForOperand = false;
-    updateDisplay();
-}
+        function clearDisplay() {
+            currentInput = '0';
+            previousInput = '0';
+            operator = null;
+            waitingForOperand = false;
+            updateDisplay();
+        }
 
-function deleteLast() {
-    if (currentInput.length > 1) {
-        currentInput = currentInput.slice(0, -1);
-    } else {
-        currentInput = '0';
-    }
-    updateDisplay();
-}
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+        function calcularAnoOuIdade() {
+            const idade = parseInt(document.getElementById('idade').value);
+            const anoNascimento = parseInt(document.getElementById('anoNascimento').value);
+            const anoAtual = new Date().getFullYear();
 
-function calcularAnoOuIdade() {
-    const idade = parseInt(document.getElementById('idade').value);
-    const anoNascimento = parseInt(document.getElementById('anoNascimento').value);
-    const anoAtual = new Date().getFullYear();
+            const resultado = document.getElementById('timeResult');
+            resultado.innerHTML = "<h4>Resultado:</h4>";
 
-    const resultado = document.getElementById('timeResult');
-    resultado.innerHTML = "<h4>Resultado:</h4>";
+            if (!isNaN(idade) && isNaN(anoNascimento)) {
+                const anoCalculado = anoAtual - idade;
+                resultado.innerHTML += `<p><strong>Com ${idade} anos, a pessoa nasceu em:</strong> ${anoCalculado}</p>`;
+            } else if (!isNaN(anoNascimento) && isNaN(idade)) {
+                const idadeCalculada = anoAtual - anoNascimento;
+                resultado.innerHTML += `<p><strong>Quem nasceu em ${anoNascimento} tem:</strong> ${idadeCalculada} anos</p>`;
+            } else if (!isNaN(idade) && !isNaN(anoNascimento)) {
+                resultado.innerHTML += `<p>Informe <strong>apenas idade</strong> ou <strong>ano de nascimento</strong>, não os dois.</p>`;
+            } else {
+                resultado.innerHTML += `<p>Preencha um dos campos para calcular.</p>`;
+            }
+        }
 
-    if (!isNaN(idade) && isNaN(anoNascimento)) {
-        const anoCalculado = anoAtual - idade;
-        resultado.innerHTML += `<p><strong>Com ${idade} anos, a pessoa nasceu em:</strong> ${anoCalculado}</p>`;
-    } else if (!isNaN(anoNascimento) && isNaN(idade)) {
-        const idadeCalculada = anoAtual - anoNascimento;
-        resultado.innerHTML += `<p><strong>Quem nasceu em ${anoNascimento} tem:</strong> ${idadeCalculada} anos</p>`;
-    } else if (!isNaN(idade) && !isNaN(anoNascimento)) {
-        resultado.innerHTML += `<p>Informe <strong>apenas idade</strong> ou <strong>ano de nascimento</strong>, não os dois.</p>`;
-    } else {
-        resultado.innerHTML += `<p>Preencha um dos campos para calcular.</p>`;
-    }
-}
+        // Cálculos de tempo
+        function addTime() {
+            const hours = parseInt(document.getElementById('addHours').value) || 0;
+            const minutes = parseInt(document.getElementById('addMinutes').value) || 0;
 
-// Cálculos de tempo
-function addTime() {
-    const hours = parseInt(document.getElementById('addHours').value) || 0;
-    const minutes = parseInt(document.getElementById('addMinutes').value) || 0;
+            const now = new Date();
+            const futureTime = new Date(now.getTime() + (hours * 60 + minutes) * 60 * 1000);
 
-    const now = new Date();
-    const futureTime = new Date(now.getTime() + (hours * 60 + minutes) * 60 * 1000);
-
-    const result = document.getElementById('timeResult');
-    result.innerHTML = `
-        <h4>Resultado:</h4>
-        <p><strong>Horário atual:</strong> ${now.toLocaleString('pt-BR')}</p>
-        <p><strong>Horário futuro:</strong> ${futureTime.toLocaleString('pt-BR')}</p>
-        <p><strong>Diferença:</strong> ${hours}h ${minutes}min</p>
-    `;
-}
-
-function addDays() {
-    const days = parseInt(document.getElementById('addDays').value) || 0;
-    const hours = parseInt(document.getElementById('addDaysHours').value) || 0;
-
-    const now = new Date();
-    const futureDate = new Date(now.getTime() + (days * 24 + hours) * 60 * 60 * 1000);
-
-    const result = document.getElementById('timeResult');
-    result.innerHTML = `
-        <h4>Resultado:</h4>
-        <p><strong>Data atual:</strong> ${now.toLocaleString('pt-BR')}</p>
-        <p><strong>Data futura:</strong> ${futureDate.toLocaleString('pt-BR')}</p>
-        <p><strong>Diferença:</strong> ${days} dias e ${hours} horas</p>
-    `;
-}
-
-// Cronômetro
-function startStopwatch() {
-    if (!stopwatchInterval) {
-        stopwatchInterval = setInterval(() => {
-            stopwatchTime += 10;
-            updateStopwatchDisplay();
-        }, 10);
-    }
-}
-
-function stopStopwatch() {
-    if (stopwatchInterval) {
-        clearInterval(stopwatchInterval);
-        stopwatchInterval = null;
-        document.title = 'Calculadora Completa';
-    }
-}
-
-function resetStopwatch() {
-    stopStopwatch();
-    stopwatchTime = 0;
-    updateStopwatchDisplay();
-    document.title = 'Calculadora Completa';
-}
-
-function updateStopwatchDisplay() {
-    const minutes = Math.floor(stopwatchTime / 60000);
-    const seconds = Math.floor((stopwatchTime % 60000) / 1000);
-    const milliseconds = Math.floor((stopwatchTime % 1000) / 10);
-
-    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
-
-    document.getElementById('stopwatch').textContent = timeString;
-
-    if (stopwatchInterval) {
-        document.title = `⏱️ ${timeString} - Calculadora Completa`;
-    }
-}
-
-// Temporizador - CORRIGIDO
-function startTimer() {
-    const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
-    const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
-
-    timerTime = (minutes * 60 + seconds) * 1000;
-
-    if (timerTime > 0 && !timerInterval) {
-        timerInterval = setInterval(() => {
-            timerTime -= 1000;
-            updateTimerDisplay();
-
-            if (timerTime <= 0) {
-    stopTimer();
-    playAlarmSound(); // ← Remover os parâmetros
-    showNotification('⏰ Temporizador finalizado!');
-}
-        }, 1000);
-    }
-}
-
-function stopTimer() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-}
-
-function resetTimer() {
-    stopTimer();
-    timerTime = 0;
-    updateTimerDisplay();
-}
-
-function updateTimerDisplay() {
-    const minutes = Math.floor(timerTime / 60000);
-    const seconds = Math.floor((timerTime % 60000) / 1000);
-
-    document.getElementById('countdown').textContent =
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-
-// Alarmes - CORRIGIDO
-function createAlarm() {
-    const time = document.getElementById('alarmTime').value;
-    const message = document.getElementById('alarmMessage').value;
-
-    if (!time) {
-        alert('Por favor, defina um horário para o alarme.');
-        return;
-    }
-
-    const alarm = {
-        id: Date.now(),
-        time: time,
-        message: message || 'Alarme',
-        active: true
-    };
-
-    alarms.push(alarm);
-    updateAlarmsDisplay();
-
-    document.getElementById('alarmTime').value = '';
-    document.getElementById('alarmMessage').value = '';
-}
-
-function updateAlarmsDisplay() {
-    const container = document.getElementById('activeAlarms');
-    container.innerHTML = '';
-
-    alarms.forEach(alarm => {
-        if (alarm.active) {
-            const alarmDiv = document.createElement('div');
-            alarmDiv.className = 'alarm-item';
-            alarmDiv.innerHTML = `
-                <div>
-                    <div class="alarm-time">${alarm.time}</div>
-                    <div>${alarm.message}</div>
-                </div>
-                <button class="btn danger" onclick="removeAlarm(${alarm.id})">Remover</button>
+            const result = document.getElementById('timeResult');
+            result.innerHTML = `
+                <h4>Resultado:</h4>
+                <p><strong>Horário atual:</strong> ${now.toLocaleString('pt-BR')}</p>
+                <p><strong>Horário futuro:</strong> ${futureTime.toLocaleString('pt-BR')}</p>
+                <p><strong>Diferença:</strong> ${hours}h ${minutes}min</p>
             `;
-            container.appendChild(alarmDiv);
         }
-    });
-}
 
-function removeAlarm(id) {
-    alarms = alarms.filter(alarm => alarm.id !== id);
-    updateAlarmsDisplay();
-}
+        function addDays() {
+            const days = parseInt(document.getElementById('addDays').value) || 0;
+            const hours = parseInt(document.getElementById('addDaysHours').value) || 0;
 
-function checkAlarms() {
-    const now = new Date();
-    const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            const now = new Date();
+            const futureDate = new Date(now.getTime() + (days * 24 + hours) * 60 * 60 * 1000);
 
-    alarms.forEach(alarm => {
-        if (alarm.active && alarm.time === currentTime) {
-    playAlarmSound(); // ← Remover os parâmetros
-    showNotification(`⏰ Alarme: ${alarm.message}`);
-    alarm.active = false;
-    updateAlarmsDisplay();
-}
-    });
-}
-
-
-
-function playAlarmSound() {
-    // Resetar flag antes de tocar
-    isPlayingAlarm = false;
-    
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        // Som simples e eficaz
-        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);
-        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 1.0);
-
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 1.0);
-
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 2);
-
-        oscillator.onended = () => {
-            audioContext.close();
-        };
-
-    } catch (error) {
-        console.error('Erro ao tocar som:', error);
-        // Fallback para vibração
-        if (navigator.vibrate) {
-            navigator.vibrate([300, 200, 300, 200, 500]);
+            const result = document.getElementById('timeResult');
+            result.innerHTML = `
+                <h4>Resultado:</h4>
+                <p><strong>Data atual:</strong> ${now.toLocaleString('pt-BR')}</p>
+                <p><strong>Data futura:</strong> ${futureDate.toLocaleString('pt-BR')}</p>
+                <p><strong>Diferença:</strong> ${days} dias e ${hours} horas</p>
+            `;
         }
-    }
-}
 
-// Conversores (mantidos iguais)
-function convertLength() {
-    const value = parseFloat(document.getElementById('lengthInput').value);
-    const from = document.getElementById('lengthFrom').value;
-    const to = document.getElementById('lengthTo').value;
+        // Cronômetro
+        function startStopwatch() {
+            if (!stopwatchInterval) {
+                stopwatchInterval = setInterval(() => {
+                    stopwatchTime += 10;
+                    updateStopwatchDisplay();
+                }, 10);
+            }
+        }
 
-    if (isNaN(value)) return;
+        function stopStopwatch() {
+            if (stopwatchInterval) {
+                clearInterval(stopwatchInterval);
+                stopwatchInterval = null;
+            }
+        }
 
-    const meters = convertToMeters(value, from);
-    const result = convertFromMeters(meters, to);
+        function resetStopwatch() {
+            stopStopwatch();
+            stopwatchTime = 0;
+            updateStopwatchDisplay();
+        }
 
-    document.getElementById('lengthResult').style.display = 'block';
-    document.getElementById('lengthResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(4)} ${getUnitName(to)}`;
-}
+        function updateStopwatchDisplay() {
+            const minutes = Math.floor(stopwatchTime / 60000);
+            const seconds = Math.floor((stopwatchTime % 60000) / 1000);
+            const milliseconds = Math.floor((stopwatchTime % 1000) / 10);
 
-function convertToMeters(value, unit) {
-    const conversions = {
-        'm': 1, 'cm': 0.01, 'mm': 0.001, 'km': 1000, 'in': 0.0254, 'ft': 0.3048
-    };
-    return value * conversions[unit];
-}
+            document.getElementById('stopwatch').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
+        }
 
-function convertFromMeters(meters, unit) {
-    const conversions = {
-        'm': 1, 'cm': 100, 'mm': 1000, 'km': 0.001, 'in': 39.3701, 'ft': 3.28084
-    };
-    return meters * conversions[unit];
-}
+        // Temporizador
+        function startTimer() {
+            const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
+            const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
 
-function getUnitName(unit) {
-    const names = {
-        'm': 'metros', 'cm': 'centímetros', 'mm': 'milímetros', 
-        'km': 'quilômetros', 'in': 'polegadas', 'ft': 'pés'
-    };
-    return names[unit];
-}
+            timerTime = (minutes * 60 + seconds) * 1000;
 
-function convertWeight() {
-    const value = parseFloat(document.getElementById('weightInput').value);
-    const from = document.getElementById('weightFrom').value;
-    const to = document.getElementById('weightTo').value;
+            if (timerTime > 0 && !timerInterval) {
+                timerInterval = setInterval(() => {
+                    timerTime -= 1000;
+                    updateTimerDisplay();
 
-    if (isNaN(value)) return;
+                    if (timerTime <= 0) {
+                        stopTimer();
+                        playAlarmSound();
+                        showNotification('⏰ Temporizador finalizado!');
+                    }
+                }, 1000);
+            }
+        }
 
-    const grams = convertToGrams(value, from);
-    const result = convertFromGrams(grams, to);
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
 
-    document.getElementById('weightResult').style.display = 'block';
-    document.getElementById('weightResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(4)} ${getWeightUnitName(to)}`;
-}
+        function resetTimer() {
+            stopTimer();
+            timerTime = 0;
+            updateTimerDisplay();
+        }
 
-function convertToGrams(value, unit) {
-    const conversions = { 'g': 1, 'kg': 1000, 'lb': 453.592, 'oz': 28.3495 };
-    return value * conversions[unit];
-}
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerTime / 60000);
+            const seconds = Math.floor((timerTime % 60000) / 1000);
 
-function convertFromGrams(grams, unit) {
-    const conversions = { 'g': 1, 'kg': 0.001, 'lb': 0.00220462, 'oz': 0.035274 };
-    return grams * conversions[unit];
-}
+            document.getElementById('countdown').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
 
-function getWeightUnitName(unit) {
-    const names = { 'g': 'gramas', 'kg': 'quilogramas', 'lb': 'libras', 'oz': 'onças' };
-    return names[unit];
-}
+        // Alarmes - OTIMIZADO
+        function createAlarm() {
+            const time = document.getElementById('alarmTime').value;
+            const message = document.getElementById('alarmMessage').value;
 
-function convertTemp() {
-    const value = parseFloat(document.getElementById('tempInput').value);
-    const from = document.getElementById('tempFrom').value;
-    const to = document.getElementById('tempTo').value;
+            if (!time) {
+                alert('Por favor, defina um horário para o alarme.');
+                return;
+            }
 
-    if (isNaN(value)) return;
+            const alarm = {
+                id: Date.now(),
+                time: time,
+                message: message || 'Alarme',
+                active: true
+            };
 
-    let celsius;
-    if (from === 'c') celsius = value;
-    else if (from === 'f') celsius = (value - 32) * 5 / 9;
-    else if (from === 'k') celsius = value - 273.15;
+            alarms.push(alarm);
+            updateAlarmsDisplay();
 
-    let result;
-    if (to === 'c') result = celsius;
-    else if (to === 'f') result = celsius * 9 / 5 + 32;
-    else if (to === 'k') result = celsius + 273.15;
+            // Limpar campos
+            document.getElementById('alarmTime').value = '';
+            document.getElementById('alarmMessage').value = '';
+        }
 
-    document.getElementById('tempResult').style.display = 'block';
-    document.getElementById('tempResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(2)}° ${getTempUnitName(to)}`;
-}
+        function updateAlarmsDisplay() {
+            const container = document.getElementById('activeAlarms');
+            container.innerHTML = '';
 
-function getTempUnitName(unit) {
-    const names = { 'c': 'Celsius', 'f': 'Fahrenheit', 'k': 'Kelvin' };
-    return names[unit];
-}
+            alarms.forEach(alarm => {
+                if (alarm.active) {
+                    const alarmDiv = document.createElement('div');
+                    alarmDiv.className = 'alarm-item';
+                    alarmDiv.innerHTML = `
+                        <div>
+                            <div class="alarm-time">${alarm.time}</div>
+                            <div>${alarm.message}</div>
+                        </div>
+                        <button class="btn danger" onclick="removeAlarm(${alarm.id})">Remover</button>
+                    `;
+                    container.appendChild(alarmDiv);
+                }
+            });
+        }
 
-function convertCurrency() {
-    const value = parseFloat(document.getElementById('currencyInput').value);
-    const from = document.getElementById('currencyFrom').value;
-    const to = document.getElementById('currencyTo').value;
+        function removeAlarm(id) {
+            alarms = alarms.filter(alarm => alarm.id !== id);
+            updateAlarmsDisplay();
+        }
 
-    if (isNaN(value)) return;
+        function checkAlarms() {
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-    const rates = {
-        'brl': { 'usd': 0.18, 'eur': 0.17 },
-        'usd': { 'brl': 5.5, 'eur': 0.92 },
-        'eur': { 'brl': 6.0, 'usd': 1.09 }
-    };
+            alarms.forEach(alarm => {
+                if (alarm.active && alarm.time === currentTime) {
+                    playAlarmSound();
+                    showNotification(`⏰ Alarme: ${alarm.message}`);
+                    alarm.active = false;
+                    updateAlarmsDisplay();
+                }
+            });
+        }
 
-    let result;
-    if (from === to) {
-        result = value;
-    } else {
-        result = value * rates[from][to];
-    }
+        // Conversores
+        function convertLength() {
+            const value = parseFloat(document.getElementById('lengthInput').value);
+            const from = document.getElementById('lengthFrom').value;
+            const to = document.getElementById('lengthTo').value;
 
-    document.getElementById('currencyResult').style.display = 'block';
-    document.getElementById('currencyResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(2)} ${to.toUpperCase()}<br><small>*Taxas de exemplo para demonstração</small>`;
-}
+            if (isNaN(value)) return;
 
-// Notificações - OTIMIZADA
-function showNotification(message) {
-    if (Notification.permission === 'granted') {
-        new Notification('⏰ Calculadora Completa', {
-            body: message,
-            icon: '🧮',
-            tag: 'calculator-alarm-' + Date.now(), // Tag única para evitar substituição
-            requireInteraction: true,
-            silent: false
-        });
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                new Notification('⏰ Calculadora Completa', {
+            const meters = convertToMeters(value, from);
+            const result = convertFromMeters(meters, to);
+
+            document.getElementById('lengthResult').style.display = 'block';
+            document.getElementById('lengthResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(4)} ${getUnitName(to)}`;
+        }
+
+        function convertToMeters(value, unit) {
+            const conversions = {
+                'm': 1,
+                'cm': 0.01,
+                'mm': 0.001,
+                'km': 1000,
+                'in': 0.0254,
+                'ft': 0.3048
+            };
+            return value * conversions[unit];
+        }
+
+        function convertFromMeters(meters, unit) {
+            const conversions = {
+                'm': 1,
+                'cm': 100,
+                'mm': 1000,
+                'km': 0.001,
+                'in': 39.3701,
+                'ft': 3.28084
+            };
+            return meters * conversions[unit];
+        }
+
+        function getUnitName(unit) {
+            const names = {
+                'm': 'metros',
+                'cm': 'centímetros',
+                'mm': 'milímetros',
+                'km': 'quilômetros',
+                'in': 'polegadas',
+                'ft': 'pés'
+            };
+            return names[unit];
+        }
+
+        function convertWeight() {
+            const value = parseFloat(document.getElementById('weightInput').value);
+            const from = document.getElementById('weightFrom').value;
+            const to = document.getElementById('weightTo').value;
+
+            if (isNaN(value)) return;
+
+            const grams = convertToGrams(value, from);
+            const result = convertFromGrams(grams, to);
+
+            document.getElementById('weightResult').style.display = 'block';
+            document.getElementById('weightResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(4)} ${getWeightUnitName(to)}`;
+        }
+
+        function convertToGrams(value, unit) {
+            const conversions = {
+                'g': 1,
+                'kg': 1000,
+                'lb': 453.592,
+                'oz': 28.3495
+            };
+            return value * conversions[unit];
+        }
+
+        function convertFromGrams(grams, unit) {
+            const conversions = {
+                'g': 1,
+                'kg': 0.001,
+                'lb': 0.00220462,
+                'oz': 0.035274
+            };
+            return grams * conversions[unit];
+        }
+
+        function getWeightUnitName(unit) {
+            const names = {
+                'g': 'gramas',
+                'kg': 'quilogramas',
+                'lb': 'libras',
+                'oz': 'onças'
+            };
+            return names[unit];
+        }
+
+        function convertTemp() {
+            const value = parseFloat(document.getElementById('tempInput').value);
+            const from = document.getElementById('tempFrom').value;
+            const to = document.getElementById('tempTo').value;
+
+            if (isNaN(value)) return;
+
+            let celsius;
+            if (from === 'c') celsius = value;
+            else if (from === 'f') celsius = (value - 32) * 5 / 9;
+            else if (from === 'k') celsius = value - 273.15;
+
+            let result;
+            if (to === 'c') result = celsius;
+            else if (to === 'f') result = celsius * 9 / 5 + 32;
+            else if (to === 'k') result = celsius + 273.15;
+
+            document.getElementById('tempResult').style.display = 'block';
+            document.getElementById('tempResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(2)}° ${getTempUnitName(to)}`;
+        }
+
+        function getTempUnitName(unit) {
+            const names = {
+                'c': 'Celsius',
+                'f': 'Fahrenheit',
+                'k': 'Kelvin'
+            };
+            return names[unit];
+        }
+
+        function convertCurrency() {
+            const value = parseFloat(document.getElementById('currencyInput').value);
+            const from = document.getElementById('currencyFrom').value;
+            const to = document.getElementById('currencyTo').value;
+
+            if (isNaN(value)) return;
+
+            // Taxas de exemplo (em um app real, você buscaria de uma API)
+            const rates = {
+                'brl': { 'usd': 0.18, 'eur': 0.17 },
+                'usd': { 'brl': 5.5, 'eur': 0.92 },
+                'eur': { 'brl': 6.0, 'usd': 1.09 }
+            };
+
+            let result;
+            if (from === to) {
+                result = value;
+            } else {
+                result = value * rates[from][to];
+            }
+
+            document.getElementById('currencyResult').style.display = 'block';
+            document.getElementById('currencyResult').innerHTML = `<strong>Resultado:</strong> ${result.toFixed(2)} ${to.toUpperCase()}<br><small>*Taxas de exemplo para demonstração</small>`;
+        }
+
+        // Notificações e Sons - CORRIGIDO
+        function showNotification(message) {
+            // Tentar usar notificação do navegador
+            if (Notification.permission === 'granted') {
+                new Notification('Calculadora Completa', {
                     body: message,
-                    icon: '🧮',
-                    tag: 'calculator-alarm-' + Date.now(),
-                    requireInteraction: true,
-                    silent: false
+                    icon: '🧮'
+                });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification('Calculadora Completa', {
+                            body: message,
+                            icon: '🧮'
+                        });
+                    }
                 });
             }
-        });
-    }
 
-    if (!document.hidden) {
-        const notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.textContent = message;
-        document.body.appendChild(notification);
+            // Mostrar notificação na tela
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
 
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 5000);
-    }
-}
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', function () {
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-    }
+        function playAlarmSound() {
+            if (isPlayingAlarm) return;
+            isPlayingAlarm = true;
 
-    updateCurrentTime();
-    setInterval(updateCurrentTime, 1000);
-    setInterval(checkAlarms, 30000);
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
 
-    // Suporte a teclado
-    document.addEventListener('keydown', function (e) {
-        if (document.querySelector('#calculator').classList.contains('active')) {
-            const key = e.key;
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            if (key >= '0' && key <= '9') {
-                inputNumber(key);
-            } else if (key === '.') {
-                inputNumber('.');
-            } else if (key === '+') {
-                inputOperator('+');
-            } else if (key === '-') {
-                inputOperator('-');
-            } else if (key === '*') {
-                inputOperator('*');
-            } else if (key === '/') {
-                e.preventDefault();
-                inputOperator('/');
-            } else if (key === 'Enter' || key === '=') {
-                e.preventDefault();
-                calculate();
-            } else if (key === 'Escape') {
-                clearDisplay();
-            } else if (key === 'Backspace') {
-                deleteLast();
+                // Frequência alternando para chamar mais atenção
+                oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);           // Agudo inicial
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);      // Baixo
+                oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 1.0);     // Mais agudo
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 1.5);      // Médio
+                oscillator.frequency.setValueAtTime(1400, audioContext.currentTime + 2.0);     // Alto
+                oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 3.0);     // Fim
+
+                // Volume progressivo (0.1 → 1.0 em 2 segundos)
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(1.0, audioContext.currentTime + 2.0);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 4); // Duração de 4 segundos
+
+                oscillator.onended = () => {
+                    audioContext.close();
+                    isPlayingAlarm = false;
+                };
+
+                // Fallback de segurança
+                setTimeout(() => {
+                    isPlayingAlarm = false;
+                }, 5000);
+
+            } catch (error) {
+                console.error('Erro ao tocar som:', error);
+                isPlayingAlarm = false;
+
+                // Fallback para vibração em dispositivos móveis
+                if (navigator.vibrate) {
+                    navigator.vibrate([300, 200, 300, 200, 500]);
+                }
             }
         }
-    });
 
-    // Cleanup quando a página é fechada
-    window.addEventListener('beforeunload', function() {
-        resetSoundSystem();
-    });
-    
-    console.log('Calculadora inicializada com sistema de som corrigido');
-});
+
+        // Inicialização - OTIMIZADA
+        document.addEventListener('DOMContentLoaded', function () {
+            // Solicitar permissão para notificações
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            // Atualizar horário atual a cada segundo
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+
+            // Verificar alarmes a cada 30 segundos (mais eficiente)
+            setInterval(checkAlarms, 30000);
+
+            // Suporte a teclado para calculadora
+            document.addEventListener('keydown', function (e) {
+                if (document.querySelector('#calculator').classList.contains('active')) {
+                    const key = e.key;
+
+                    if (key >= '0' && key <= '9') {
+                        inputNumber(key);
+                    } else if (key === '.') {
+                        inputNumber('.');
+                    } else if (key === '+') {
+                        inputOperator('+');
+                    } else if (key === '-') {
+                        inputOperator('-');
+                    } else if (key === '*') {
+                        inputOperator('*');
+                    } else if (key === '/') {
+                        e.preventDefault();
+                        inputOperator('/');
+                    } else if (key === 'Enter' || key === '=') {
+                        e.preventDefault();
+                        calculate();
+                    } else if (key === 'Escape') {
+                        clearDisplay();
+                    } else if (key === 'Backspace') {
+                        deleteLast();
+                    }
+                }
+            });
+
+            // Fazer o botão igual ocupar duas linhas
+            const equalsButton = document.querySelector('.calc-btn.equals');
+            if (equalsButton) {
+                equalsButton.style.gridRow = 'span 2';
+            }
+
+            // Adicionar event listeners para economia de bateria
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    // Página não está visível, reduzir atividade
+                    console.log('Página em background - reduzindo atividade');
+                } else {
+                    // Página volta a estar visível
+                    updateCurrentTime();
+                }
+            });
+        });
 
         // Função para fazer o cálculo quando clicado no botão = - REMOVIDA DUPLICATA
         // (A função calculate() já existe acima)
